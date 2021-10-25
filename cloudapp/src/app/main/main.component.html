@@ -5,13 +5,14 @@
 <div *ngIf="health">
   <div *ngIf="valid; else invalid" class="status valid">
     <mat-icon inline>check_circle</mat-icon>
-    <p>The EZ Proxy Authentication app is configured properly.</p>
-    <p>The app URL is:<br><code>{{ url }}</code></p>
+    <p>The hosted EZproxy authenticator is configured properly.</p>
+    <p>Configure the following line in your <code>user.txt</code> file in your EZproxy configuration, as defined in the <a href="https://help.oclc.org/Library_Management/EZproxy/Authenticate_users/EZproxy_authentication_methods/External_script_authentication?sl=en" target="_blank">documentation</a>:</p>
+    <p><code>::external={{ url }},post=user=^u&pass=^p</code></p>
   </div>
   <ng-template #invalid>
     <div class="status invalid">
       <mat-icon inline>remove_circle</mat-icon>
-      <p>The EZ Proxy Authentication app is not configured properly.</p> 
+      <p>The hosted EZproxy authenticator is not configured properly.</p> 
       <p><strong>Error message:</strong> {{ health?.msg }}</p>
     </div>
   </ng-template>  

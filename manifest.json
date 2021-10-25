@@ -1,9 +1,9 @@
 {
    "id": "exl-ezproxy-auth-hosted",
-   "title": "EZ Proxy Auth Config",
-   "subtitle": "Configures the Ex Libris EZ Proxy hosted authenticator",
-   "author": "Ex Libris",
-   "description": "Provides a configuraiton interface for the hosted authentication script for OCLC EZ Proxy",
+   "title": "EZproxy Auth Config",
+   "subtitle": "Configures the Ex Libris EZproxy hosted authenticator",
+   "author": "Josh Weisman",
+   "description": "Provides a configuration interface for the hosted authentication script for OCLC EZproxy",
    "icon": {
       "type": "url",
       "value": "/assets/ezproxy-config-icon.png"
