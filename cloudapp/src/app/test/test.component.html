@@ -1,0 +1,16 @@
+<div class="cloudapp-actions">
+  <button mat-flat-button color="secondary" [routerLink]="['/']">
+    <mat-icon>arrow_back_ios</mat-icon> Back
+  </button>
+</div>
+<form id="form" *ngIf="initData" method="post" action="{{ url }}" target="_blank">
+  <mat-form-field>
+    <mat-label>Username</mat-label>
+    <input matInput type="text" name="user">
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Password</mat-label>
+    <input matInput type="password" name="pass">
+  </mat-form-field>  
+  <button mat-flat-button color="primary" type="submit" onclick="form.submit()">Submit</button>
+</form>

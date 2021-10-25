@@ -1,0 +1,25 @@
+@mixin md-icon-size($size: 24px) {
+  font-size: $size;
+  height: $size;
+  width: $size;
+  line-height: $size;
+}
+.status {
+  text-align: center;
+
+  .mat-icon {
+    @include md-icon-size(72px);
+  }
+}
+.status.valid .mat-icon {
+  color: #008000;
+}
+.status.invalid .mat-icon {
+    color: #FF7F50;
+}
+p {
+  text-align: center;
+}
+code {
+  word-break: break-all
+}

@@ -1,0 +1,25 @@
+<mat-form-field class="chip-list">
+  <mat-chip-list #chipList>
+    <mat-chip
+      *ngFor="let usergroup of group.value; index as j"
+      [selectable]="false"
+      [removable]="true"
+      (removed)="remove(j)">
+      {{ usergroup }}
+      <mat-icon matChipRemove>cancel</mat-icon>
+    </mat-chip>
+    <input
+      placeholder="Add user group..."
+      #groupInput
+      [formControl]="groupCtrl"
+      [matAutocomplete]="auto"
+      [matChipInputFor]="chipList"
+      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+      (matChipInputTokenEnd)="add($event)">
+  </mat-chip-list>
+  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event, i)">
+    <mat-option *ngFor="let usergroup of usergroupsFiltered | async" [value]="usergroup">
+      {{ usergroup.description }}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

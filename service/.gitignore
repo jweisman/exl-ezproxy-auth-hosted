@@ -1,0 +1,4 @@
+.env*
+*.packaged.yaml
+.npmrc
+node_modules/

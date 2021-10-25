@@ -1,0 +1,156 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: EZProxyAuthHosted API
+  
+Globals:
+  Function:
+    Timeout: 30
+Parameters:
+  ApiKeysSecretName:
+    Type: String
+    Default: EZProxyAuthHosted/ApiKeysSecret
+  ConfigS3Bucket:
+    Type: String
+    Description: Bucket for config file
+Resources:
+  EZProxyAuthHostedAPI:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Auth:
+        Authorizers:
+          JWTAuthorizer:
+            IdentitySource: '$request.header.Authorization'
+            JwtConfiguration: 
+              audience: 
+              - ExlCloudApp:!~exl-ezproxy-auth-hosted
+              - ExlCloudApp:jweisman/exl-ezproxy-auth-hosted
+              issuer: https://apps01.ext.exlibrisgroup.com/auth
+            Name: JwtAuthorizer 
+        # Uncomment this line to use the JWT authorizer for all routes
+        # DefaultAuthorizer: JWTAuthorizer  
+      CorsConfiguration:
+        AllowOrigins:
+          - "https://apps01.ext.exlibrisgroup.com"
+          - "http://localhost:4200"
+        AllowHeaders: [authorization, content-type]
+        AllowMethods: [GET, POST, PUT, OPTIONS]
+        AllowCredentials: True
+        MaxAge: 600
+  EZProxyAuthHostedFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: handler.handler
+      Layers:
+        - !Ref EZProxyAuthHostedDependencies
+      Runtime: nodejs14.x
+      Environment:
+        Variables:
+          APIKEYS_SECRET: !Ref ApiKeysSecretName
+          CONFIG_S3_BUCKET: !Ref ConfigS3Bucket
+      MemorySize: 1028
+      FunctionName: EZProxyAuthHostedService
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Events:
+        GetConfig:
+          Type: HttpApi
+          Properties:
+            Path: /config 
+            Method: get
+            ApiId: !Ref EZProxyAuthHostedAPI 
+            Auth:
+              Authorizer: JWTAuthorizer
+        SetConfig:
+          Type: HttpApi
+          Properties:
+            Path: /config
+            Method: put  
+            ApiId: !Ref EZProxyAuthHostedAPI            
+            Auth:
+              Authorizer: JWTAuthorizer            
+        Health:
+          Type: HttpApi
+          Properties:
+            Path: /{inst_code}/health 
+            Method: get
+            ApiId: !Ref EZProxyAuthHostedAPI            
+        Auth:
+          Type: HttpApi
+          Properties:
+            Path: /{inst_code}
+            Method: post
+            ApiId: !Ref EZProxyAuthHostedAPI            
+        Home:
+          Type: HttpApi
+          Properties:
+            Path: /{inst_code}
+            Method: get
+            ApiId: !Ref EZProxyAuthHostedAPI            
+  EZProxyAuthHostedDependencies:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub "${AWS::StackName}-Dependencies"
+      Description: Dependencies for EZProxyAuthHosted
+      ContentUri: dependencies/
+      CompatibleRuntimes:
+        - nodejs12.x
+        - nodejs14.x
+      LicenseInfo: 'MIT'
+      RetentionPolicy: Retain
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: lambda.amazonaws.com
+          Action: sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: logs
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource: arn:aws:logs:*:*:*
+      - PolicyName: secrets
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - secretsmanager:GetSecretValue
+            - secretsmanager:PutSecretValue
+            Resource: !Ref ApiKeysSecret
+      - PolicyName: config
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - s3:PutObject
+            - s3:GetObject
+            Resource: !Sub "arn:aws:s3:::${ConfigS3Bucket}/exl-ezproxy-auth-hosted/*"            
+  ApiKeysSecret:
+    Type: 'AWS::SecretsManager::Secret'
+    Properties:
+      Name: !Ref ApiKeysSecretName
+      SecretString: '{}'
+  HttpApiMapping: 
+      Type: AWS::ApiGatewayV2::ApiMapping
+      Properties: 
+        ApiId: !Ref EZProxyAuthHostedAPI
+        DomainName: api-eu.exldevnetwork.net
+        Stage: $default
+        ApiMappingKey: ezproxy
+
+Outputs:
+  EZProxyAuthHostedAPI:
+    Description: "Endpoint URL"
+    Value: !Sub "https://${EZProxyAuthHostedAPI}.execute-api.${AWS::Region}.amazonaws.com/"            

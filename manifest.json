@@ -1,0 +1,20 @@
+{
+   "id": "exl-ezproxy-auth-hosted",
+   "title": "EZ Proxy Auth Config",
+   "subtitle": "Configures the Ex Libris EZ Proxy hosted authenticator",
+   "author": "Ex Libris",
+   "description": "Provides a configuraiton interface for the hosted authentication script for OCLC EZ Proxy",
+   "icon": {
+      "type": "url",
+      "value": "/assets/ezproxy-config-icon.png"
+   },
+   "contentSecurity": {
+      "connectSrc": [
+         "https://*.execute-api.eu-central-1.amazonaws.com",
+         "https://api-eu.exldevnetwork.net"
+      ],
+      "sandbox": {
+         "popups": true
+      }
+   }
+}

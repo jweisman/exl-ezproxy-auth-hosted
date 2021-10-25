@@ -1,0 +1,32 @@
+<div class="cloudapp-actions">
+  <button mat-flat-button color="secondary" [routerLink]="['/']">
+    <mat-icon>arrow_back_ios</mat-icon> Back
+  </button>
+  <button mat-flat-button type="button" color="primary" (click)="save()">Save</button>
+</div>
+<h1>Configuration</h1>
+<form *ngIf="form" [formGroup]="form">
+  <mat-form-field>
+    <mat-label>API Key</mat-label>
+    <input matInput type="" formControlName="apikey">
+    <mat-hint>Enter an <a href="https://developers.exlibrisgroup.com/alma/apis/" target=_blank>API key</a> configured for read/write access to the users area.</mat-hint>
+  </mat-form-field>
+  <h2>Groups</h2>
+  <mat-card *ngFor="let group of groups.controls | keyvalue; index as i;">
+    <mat-card-header>
+      <mat-card-title>{{group.key}}</mat-card-title>
+      <i class="uxf-icon uxf-close eca-button" (click)="remove(group.key)"></i>    
+    </mat-card-header>
+    <mat-card-content>
+      <app-config-group
+      [group]="group.value"
+      [usergroups]="usergroups"
+    ></app-config-group>
+    </mat-card-content>
+  </mat-card>
+  <button mat-flat-button type="button" color="secondary" (click)="add()">Add group</button>
+</form>
+
+<div class="loading-shade" *ngIf="saving">
+  <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+</div>

@@ -1,0 +1,22 @@
+<div class="cloudapp-actions">
+  <button *ngIf="valid" mat-flat-button type="button" color="secondary" [routerLink]="['/test']">Test</button>
+  <button *ngIf="isAdmin" mat-flat-button type="button" color="primary" [routerLink]="['/configuration']">Configuration</button>
+</div>
+<div *ngIf="health">
+  <div *ngIf="valid; else invalid" class="status valid">
+    <mat-icon inline>check_circle</mat-icon>
+    <p>The EZ Proxy Authentication app is configured properly.</p>
+    <p>The app URL is:<br><code>{{ url }}</code></p>
+  </div>
+  <ng-template #invalid>
+    <div class="status invalid">
+      <mat-icon inline>remove_circle</mat-icon>
+      <p>The EZ Proxy Authentication app is not configured properly.</p> 
+      <p><strong>Error message:</strong> {{ health?.msg }}</p>
+    </div>
+  </ng-template>  
+</div>
+<ng-template #notadmin>You are not an admin</ng-template>
+<div class="loading-shade" *ngIf="loading">
+  <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+</div>
