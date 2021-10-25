@@ -4,14 +4,14 @@
   </button>
 </div>
 <h1>Test Form</h1>
-<form id="form" *ngIf="initData" method="post" action="{{ url }}" target="_blank">
+<form #testform *ngIf="initData" method="post" action="{{ url }}" target="_blank">
   <mat-form-field>
     <mat-label>Username</mat-label>
-    <input matInput type="text" name="user">
+    <input matInput type="text" name="user" required>
   </mat-form-field>
   <mat-form-field>
     <mat-label>Password</mat-label>
-    <input matInput type="password" name="pass">
+    <input matInput type="password" name="pass" required>
   </mat-form-field>  
-  <button mat-flat-button color="primary" type="submit" onclick="form.submit()">Test Authentication</button>
+  <button mat-flat-button color="primary" (click)="submit()">Test Authentication</button>
 </form>

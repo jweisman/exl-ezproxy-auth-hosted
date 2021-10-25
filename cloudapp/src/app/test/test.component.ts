@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { CloudAppEventsService, InitData } from "@exlibris/exl-cloudapp-angular-lib";
 import { environment } from "../../environments/environment";
 
@@ -9,6 +9,7 @@ import { environment } from "../../environments/environment";
 })
 export class TestComponent implements OnInit {
   initData: InitData;
+  @ViewChild('testform') form: HTMLFormElement;
 
   constructor(
     private events: CloudAppEventsService,
@@ -17,6 +18,10 @@ export class TestComponent implements OnInit {
   ngOnInit() {
     this.events.getInitData()
     .subscribe(initData => this.initData = initData);
+  }
+
+  submit() {
+    this.form.nativeElement.submit();
   }
 
   get url() {

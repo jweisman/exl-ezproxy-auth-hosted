@@ -52,7 +52,7 @@ const handler = async (event, context) => {
         config = await getConfig(inst_code);
         const groups = config.groups || {};
         try {
-          result = success(await authenticate(apikey, groups, inst_code, user, pass), "text/plain");
+          result = success(await authenticate(apikey, groups, user, pass), "text/plain");
         } catch (e) {
           result = error(e);
         }
@@ -77,9 +77,10 @@ const obfuscate = val => {
     return val.replace(re, m => "*".repeat(m.length));
 }
 
-const authenticate = async (apikey, groups, inst_code, user, pass) => {
+const authenticate = async (apikey, groups, user, pass) => {
     alma.setOptions(apikey);
     try {
+      if (!(user && pass)) throw new Error("User and password required");
       await alma.postp(`/users/${user}?op=auth&password=${pass}`, null);
       let resp = await alma.getp(`/users/${user}`);
       const usergroup = resp.user_group.value;
