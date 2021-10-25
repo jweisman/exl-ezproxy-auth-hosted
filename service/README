@@ -1,0 +1,18 @@
+# Hosted Ex Libris EZ Proxy Authentication Service
+
+## Introduction
+This service provides the functionality for the [Hosted EZ Proxy Authentication App](https://developers.exlibrisgroup.com/appcenter/ezproxy-auth-hosted/) .
+
+## Deployment to AWS
+To deploy to AWS, follow the steps below. 
+1. Create a `.npmrc` file with the following content:
+```
+s3_bucket_name = almadtest-fran # Name of bucket in your AWS account to upload the assets to
+region = eu-central-1 # Region to deploy to
+cloud_formation_stack_name = EZProxyAuthHosted # Stack name
+config_s3_bucket = exl-dev-scratch
+```
+2. Run the following to deploy the CloudFormation template. The output will include the URL of the proxy. 
+```
+$ npm run deploy
+```
