@@ -17,7 +17,7 @@
       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
       (matChipInputTokenEnd)="add($event)">
   </mat-chip-list>
-  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event, i)">
+  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
     <mat-option *ngFor="let usergroup of usergroupsFiltered | async" [value]="usergroup">
       {{ usergroup.description }}
     </mat-option>
