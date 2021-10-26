@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CloudAppEventsService, InitData } from '@exlibris/exl-cloudapp-angular-lib';
+import { AlertService, CloudAppEventsService, InitData } from '@exlibris/exl-cloudapp-angular-lib';
 import { of } from 'rxjs';
 import { catchError, finalize, skipWhile, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -20,6 +20,7 @@ export class MainComponent implements OnInit, OnDestroy {
   constructor(
     private events: CloudAppEventsService,
     private http: HttpService,
+    private alert: AlertService,
   ) { }
 
   ngOnInit() {
@@ -29,9 +30,16 @@ export class MainComponent implements OnInit, OnDestroy {
       tap(initData => this.initData = initData),
       switchMap(initData => this.http.get<Health>(`/${initData.instCode}/health`)),
       finalize(() => this.loading = false),
-      catchError(e => of(e.error as Health))
+      catchError(e => {
+        if (e.status == '400' && e.error && e.error.status) {
+          return of(e.error as Health)
+        } else throw e;
+      })
     )
-    .subscribe(health => this.health = health);
+    .subscribe({
+      next: health => this.health = health,
+      error: e => this.alert.error(`Could not retrieve health status. ${e.message}`)
+    });
   }
 
   get valid() {

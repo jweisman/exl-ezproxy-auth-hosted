@@ -15,9 +15,12 @@
       <p>The hosted EZproxy authenticator is not configured properly.</p> 
       <p><strong>Error message:</strong> {{ health?.msg }}</p>
     </div>
+    <p *ngIf="isAdmin; else notadmin">Click the button above to configure the authenticator.</p>
+    <ng-template #notadmin>
+      <p>The authenticator can only be configured by a user with the General Administrator role.</p>
+    </ng-template>
   </ng-template>  
 </div>
-<ng-template #notadmin>You are not an admin</ng-template>
 <div class="loading-shade" *ngIf="loading">
   <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
 </div>

@@ -1,7 +1,7 @@
 import { Component, Injectable, OnDestroy, OnInit } from "@angular/core";
 import { FormArray, FormGroup } from "@angular/forms";
 import { CanActivate, Router } from "@angular/router";
-import { CloudAppEventsService } from "@exlibris/exl-cloudapp-angular-lib";
+import { AlertService, CloudAppEventsService } from "@exlibris/exl-cloudapp-angular-lib";
 import { DialogService } from "eca-components";
 import { concat, forkJoin, Observable } from "rxjs";
 import { finalize, map } from "rxjs/operators";
@@ -27,6 +27,7 @@ export class ConfigurationComponent implements OnInit, OnDestroy {
     private alma: AlmaService,
     private dialog: DialogService,
     private http: HttpService,
+    private alert: AlertService,
   ) {}
 
   ngOnInit() {
@@ -37,17 +38,21 @@ export class ConfigurationComponent implements OnInit, OnDestroy {
     ])
     .pipe(finalize(() => this.saving = false))
     .subscribe(results => {
-      const [usergroups, config] = results;
-      this.usergroups = usergroups.row.filter(r => r.enabled || r.enabled == null);
-      this.form = configFormGroup(config);
-    });
+        const [usergroups, config] = results;
+        this.usergroups = usergroups.row.filter(r => r.enabled || r.enabled == null);
+        this.form = configFormGroup(config);
+      }, 
+      e => this.alert.error(`Could not retrieve configuration. ${e.message}`)
+    );
   }
 
   save() {
     this.saving = true;
     this.http.put('/config', this.form.value)
     .pipe(finalize(() => this.saving = false))
-    .subscribe();
+    .subscribe({
+      error: e => this.alert.error(`Could not save configuration. ${e.message}`)
+    });
   }
 
   ngOnDestroy() {

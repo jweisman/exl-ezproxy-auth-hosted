@@ -18,13 +18,12 @@ export class HttpService {
 
   get<T = any>(uri: string, options: { params?: HttpParams, headers?: HttpHeaders  } = { params: null, headers: null }) {
     if (!options.headers) options.headers = new HttpHeaders();
-    //const url = new URL(uri);
     return this.getToken().pipe(
       tap(token => {
         options.headers = options.headers
           .set('Authorization', `Bearer ${token}`)
-          //.set('X-Proxy-Host', url.hostname);
       }),
+      /* observe: response allows body of 400 error message to be retrieved and parsed */
       switchMap(() => this.http.get<T>(`${environment.service}${uri}`, { observe: 'response', ...options })),
       map(response => response.body as T),
     )
